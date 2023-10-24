@@ -7,7 +7,7 @@
 #include <WiFi.h>
 #include <WiFiManager.h>
 #include <WebServer.h>
-#include "webserser.h"
+#include "web.h"
 
 #define EEPROM_SIZE 100
 
@@ -42,11 +42,19 @@ String LCDDAD;
 String LCDAS;
 
 
+int pwmChannel1 = 0;    // PWM channel for pin 16
+int pwmChannel2 = 1;    // PWM channel for pin 17
+int pwmChannel3 = 2;    // PWM channel for pin 18
+int pwmFreq = 5000;     // Frequency in Hz
+int pwmResolution = 8;  // Resolution in bits (1-16)
+
+
+
 int save = 0;
 int loca = 18;
-int setDAD = 30;
-int setNT = 50;
-int TimeBD = 10;
+int speedFAN = 30;
+int brightnessLED = 50;
+int speedPUMP = 10;
 String tam;
 int KT;
 int selection = 0;
@@ -76,17 +84,11 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);  // I2C address 0x27, 16 column and 2 rows
 
 int cursorColumn = 0;
 
-void LCD_setup();
-void LCD_sensor();
-void LCD_show();
-void LCD_setNT();
-void LCD_setDAD();
-
 
 WebServer server(80);
 void setup() {
   Serial.begin(9600);
- // pinMode(chandht, INPUT);
+  pinMode(chandht, INPUT);
 
   pinMode(chancb_anhsang, INPUT);
 
@@ -102,29 +104,44 @@ void setup() {
   pinMode(buttonfan, INPUT_PULLUP);
   pinMode(buttonpump, INPUT_PULLUP);
 
-  digitalWrite(ledPin, LOW);
-  digitalWrite(fanPin, LOW);
-  digitalWrite(pumpPin, LOW);
-  
+  ledcSetup(pwmChannel1, pwmFreq, pwmResolution);
+  ledcSetup(pwmChannel2, pwmFreq, pwmResolution);
+  ledcSetup(pwmChannel3, pwmFreq, pwmResolution);
+
+  ledcAttachPin(pumpPin, pwmChannel1);
+  ledcAttachPin(fanPin, pwmChannel2);
+  ledcAttachPin(ledPin, pwmChannel3);
+
+
+  ledcWrite(pwmChannel3, 0);
+  ledcWrite(pwmChannel2, 0);
+  ledcWrite(pwmChannel1, 0);
 
 
   EEPROM.begin(EEPROM_SIZE);
-  setNT = EEPROM.read(0);
-  setDAD = EEPROM.read(1);
-  TimeBD = EEPROM.read(4);
+  brightnessLED = EEPROM.read(0);
+  speedFAN = EEPROM.read(1);
+  speedPUMP = EEPROM.read(2);
   Controls = EEPROM.read(8);
+
+
+
+  xTaskCreate(Task_readKeypadTask, "KeypadTask", 3072, NULL, 4, NULL);
+
+  xTaskCreate(Task_read_temperature, "dhtnhietdo", 2048, NULL, 5, NULL);
+
+  xTaskCreate(Task_read_soil_moisture, "cbdoamdat", 2048, NULL, 6, NULL);
+  xTaskCreate(Task_read_light, "cb_anhsang", 2048, NULL, 7, NULL);
+
+  xTaskCreate(Task_readbuttonled, "buttonledTask", 2048, NULL, 1, NULL);
+  xTaskCreate(Task_readbuttonfan, "buttonfanTask", 2048, NULL, 2, NULL);
+  xTaskCreate(Task_readbuttonpump, "buttonpumpTask", 2048, NULL, 3, NULL);
+  lcd.init();  // initialize the lcd
+  lcd.backlight();
 
   function_wifi();
 
-  xTaskCreatePinnedToCore(Task_readKeypadTask, "KeypadTask", 2048, NULL, 5, NULL, 1);
 
-  xTaskCreatePinnedToCore(Task_read_temperature, "dhtnhietdo", 1024, NULL, 5, NULL, 1);
-
-  xTaskCreatePinnedToCore(Task_read_soil_moisture, "cbdoamdat", 1024, NULL, 4, NULL, 1);
-  xTaskCreatePinnedToCore(Task_read_light, "cb_anhsang", 2048, NULL, 4, NULL, 0);
-
-  lcd.init();  // initialize the lcd
-  lcd.backlight();
 
   server.on("/", ketnoi);
 
@@ -165,10 +182,6 @@ void setup() {
   server.on("/setIMAGE", handlekiemtraImage);
 
   server.begin();
-
-  xTaskCreatePinnedToCore(Task_readbuttonled, "buttonledTask", 1024, NULL, 5, NULL, 1);
-  xTaskCreatePinnedToCore(Task_readbuttonfan, "buttonfanTask", 1024, NULL, 5, NULL, 1);
-  xTaskCreatePinnedToCore(Task_readbuttonpump, "buttonpumpTask", 1024, NULL, 5, NULL, 1);
 }
 
 void loop() {
@@ -177,9 +190,9 @@ void loop() {
 
 void Task_readKeypadTask(void *pvParameters) {  // Task to read keypad input
 
-  (void)pvParameters;
 
-  for (;;) {
+
+  while (1) {
     char key = keypad.getKey();
 
     if (key) {
@@ -203,14 +216,21 @@ void Task_readKeypadTask(void *pvParameters) {  // Task to read keypad input
       }
       if (save == 1) {
         if (key == '#') {
-          selection = !selection;
+          if (selection == 0) {
+            selection = 1;
+          } else if (selection == 1) {
+            selection = 2;
+
+          } else {
+            selection = 0;
+          }
         }
       }
 
       if (save == 1) {
         if (selection == 0) {
-          LCD_setDAD();
-          if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
+          LCD_speedFAN();
+          if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9' || key == '0') {
             KT = 1;
             if (loca == 18 || loca == 19) {
               lcd.setCursor(loca, 3);  // move cursor to   (cursorColumn, 0)
@@ -237,8 +257,39 @@ void Task_readKeypadTask(void *pvParameters) {  // Task to read keypad input
         }
 
         if (selection == 1) {
-          LCD_setNT();
-          if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
+          LCD_brightnessLED();
+          if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9' || key == '0') {
+            KT = 1;
+
+            if (loca == 18 || loca == 19) {
+
+              lcd.setCursor(loca, 3);  // move cursor to   (cursorColumn, 0)
+              lcd.print(key);
+            }
+
+            loca++;
+
+            if (loca == 19 || loca == 20) {
+              tam += key;
+              Serial.println(tam);
+              if (loca == 20) {
+                lcd.setCursor(18, 3);  // move cursor to   (cursorColumn, 0)
+                lcd.print(tam);
+              }
+            }
+
+            if (loca == 21) {
+              lcd.setCursor(0, 3);  // Set cursor to the beginning of the second line
+              lcd.print("                    ");
+              loca = 18;
+              tam = "";
+            }
+          }
+        }
+
+        if (selection == 2) {
+          LCD_speedPUMP();
+          if (key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9' || key == '0') {
             KT = 1;
 
             if (loca == 18 || loca == 19) {
@@ -271,13 +322,14 @@ void Task_readKeypadTask(void *pvParameters) {  // Task to read keypad input
           if (selection == 0) {
 
             if (KT == 1) {
-              setDAD = tam.toInt();
-              EEPROM.write(1, setDAD);
+              //speedFAN = tam.toInt();
+              speedFAN = map(tam.toInt(), 0, 100, 0, 255);
+              EEPROM.write(1, speedFAN);
               EEPROM.commit();
               Serial.print("gia tri cua tam la: ");
               Serial.println(tam);
               Serial.print("gia tri cua SP la: ");
-              Serial.println(setDAD);
+              Serial.println(speedFAN);
 
               KT = 0;
             }
@@ -286,13 +338,30 @@ void Task_readKeypadTask(void *pvParameters) {  // Task to read keypad input
           if (selection == 1) {
 
             if (KT == 1) {
-              setNT = tam.toInt();
-              EEPROM.write(0, setNT);
+              // brightnessLED = tam.toInt();
+              brightnessLED = map(tam.toInt(), 0, 100, 0, 255);
+              EEPROM.write(0, brightnessLED);
               EEPROM.commit();
               Serial.print("gia tri cua tam la: ");
               Serial.println(tam);
               Serial.print("gia tri cua SP la: ");
-              Serial.println(setDAD);
+              Serial.println(brightnessLED);
+
+              KT = 0;
+            }
+          }
+
+
+          if (selection == 2) {
+
+            if (KT == 1) {
+              speedPUMP = map(tam.toInt(), 0, 100, 0, 255);
+              EEPROM.write(2, speedPUMP);
+              EEPROM.commit();
+              Serial.print("gia tri cua tam la: ");
+              Serial.println(tam);
+              Serial.print("gia tri cua SP la: ");
+              Serial.println(speedPUMP);
 
               KT = 0;
             }
@@ -301,7 +370,7 @@ void Task_readKeypadTask(void *pvParameters) {  // Task to read keypad input
       }
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));  // Wait for 100 milliseconds
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Wait for 100 milliseconds
   }
 }
 
@@ -367,47 +436,60 @@ void LCD_show() {
 
   lcd.setCursor(4, 0);
 
-  lcd.print("SET POINTS");
+  lcd.print("CONTROl SPEED SETTING");
 
   lcd.setCursor(0, 1);
-  lcd.print("POINT NT:");
-  lcd.setCursor(12, 1);
-  lcd.print(setNT);
-  lcd.setCursor(14, 1);
-  lcd.print("C");
+  lcd.print("BRIGHTNESS LED:");
+  lcd.setCursor(16, 1);
+  lcd.print(percent(brightnessLED));
+  lcd.setCursor(19, 1);
+  lcd.print("%");
 
   lcd.setCursor(0, 2);
-  lcd.print("POINT DAD:");
+  lcd.print("FAN SPEED:");
   lcd.setCursor(12, 2);
-  lcd.print(setDAD);
+  lcd.print(percent(speedFAN));
   lcd.setCursor(14, 2);
   lcd.print("%");
 
   lcd.setCursor(0, 3);
-  lcd.print("ACTIVE MODE: ");
+  lcd.print("PUMP SPEED: ");
   lcd.setCursor(12, 3);
-  lcd.print(Controls);
+  lcd.print(percent(speedPUMP));
+  lcd.setCursor(15, 3);
+  lcd.print("%");
 }
 
-void LCD_setNT() {
+void LCD_brightnessLED() {
 
-  Serial.println("Dang o task LCD_setNT");
+  Serial.println("Dang o task LCD_brightnessLED");
   lcd.clear();
   lcd.backlight();
   lcd.setCursor(2, 0);
-  lcd.print("SETTING SET POINT");
+  lcd.print("SETTING POINT PWM");
   lcd.setCursor(4, 1);
-  lcd.print("TEMPERATURE");
+  lcd.print("BRIGHTNESS LED");
 }
 
-void LCD_setDAD() {
-  Serial.println("Dang o task LCD_setDAD");
+void LCD_speedFAN() {
+  Serial.println("Dang o task LCD_speedFAN");
   lcd.clear();
   lcd.backlight();
   lcd.setCursor(2, 0);
-  lcd.print("SETTING SET POINT");
+  lcd.print("SETTING POINT PWM");
   lcd.setCursor(3, 1);
-  lcd.print("SOIL MOISTURE");
+  lcd.print("FAN SPEED");
+}
+
+
+void LCD_speedPUMP() {
+  Serial.println("Dang o task LCD_speedPUMP");
+  lcd.clear();
+  lcd.backlight();
+  lcd.setCursor(2, 0);
+  lcd.print("SETTING POINT PWM");
+  lcd.setCursor(3, 1);
+  lcd.print("PUMP SPEED");
 }
 
 void printLCD() {
@@ -417,9 +499,9 @@ void printLCD() {
 
 void Task_read_soil_moisture(void *pvParameters)  // This is a task.
 {
-  (void)pvParameters;
 
-  for (;;) {
+
+  while (1) {
     // read the input on analog pin A3:
     int sensorValue = analogRead(chancb_dat);
     // print out the value you read:
@@ -435,15 +517,15 @@ void Task_read_soil_moisture(void *pvParameters)  // This is a task.
       LCDDAD = spercent;
     }
 
-    vTaskDelay(4000);  // one tick delay (15ms) in between reads for stability
+    vTaskDelay(4000 / portTICK_PERIOD_MS);  // one tick delay (15ms) in between reads for stability
   }
 }
 
 void Task_read_light(void *pvParameters)  // This is a task.
 {
-  (void)pvParameters;
 
-  for (;;) {
+
+  while (1) {
     // read the input on analog pin A3:
     int sensorValue = analogRead(chancb_anhsang);
     // print out the value you read:
@@ -465,21 +547,21 @@ void Task_read_light(void *pvParameters)  // This is a task.
       LCDAS = anhsang;
     }
 
-    vTaskDelay(4000);  // one tick delay (15ms) in between reads for stability
+    vTaskDelay(4000 / portTICK_PERIOD_MS);  // one tick delay (15ms) in between reads for stability
   }
 }
 
 void Task_read_temperature(void *pvParameters)  // This is a task.
 {
-  (void)pvParameters;
 
-  for (;;) {
+
+  while (1) {
     // read the input on analog pin A3:
     call_read_temperature();
     call_read_temperature_in_F();
     call_read_Humidit();
 
-    vTaskDelay(4000);  // one tick delay (15ms) in between reads for stability
+    vTaskDelay(4000 / portTICK_PERIOD_MS);  // one tick delay (15ms) in between reads for stability
   }
 }
 
@@ -595,7 +677,13 @@ void handleLED() {
   String cled = server.arg("CLED");
   // thled = cled;
   int dk = cled.toInt();
-  digitalWrite(ledPin, dk);
+
+  if (dk == 1) {
+    ledcWrite(pwmChannel3, brightnessLED);
+
+  } else {
+    ledcWrite(pwmChannel3, 0);
+  }
 
   Serial.print("LED dang o trang thai:");
   Serial.println(dk);
@@ -608,7 +696,13 @@ void handleFAN() {
   String cfan = server.arg("CFAN");
   // thfan = cfan;
   int dk = cfan.toInt();
-  digitalWrite(fanPin, dk);
+  if (dk == 1) {
+    ledcWrite(pwmChannel2, speedFAN);
+
+  } else {
+    ledcWrite(pwmChannel2, 0);
+  }
+
 
   Serial.print("FAN dang o trang thai:");
   Serial.println(dk);
@@ -622,7 +716,12 @@ void handlePUMP() {
   String cpump = server.arg("CPUMP");
   // thpump = cpump;
   int dk = cpump.toInt();
-  digitalWrite(pumpPin, dk);
+  if (dk == 1) {
+    ledcWrite(pwmChannel1, speedPUMP);
+
+  } else {
+    ledcWrite(pwmChannel1, 0);
+  }
 
   Serial.print("PUMP dang o trang thai:");
   Serial.println(dk);
@@ -634,37 +733,42 @@ void handlePUMP() {
 
 void handlekiemtraNT() {
   String KTNT = server.arg("KTNT");
-  setNT = KTNT.toInt();
+  int percent = KTNT.toInt();
 
-  EEPROM.write(0, setNT);
+  brightnessLED = map(percent, 0, 100, 0, 255);
+
+  EEPROM.write(0, brightnessLED);
   EEPROM.commit();
 
   delay(60);
   Serial.print("Dieu kien kiem tra nhiet do: ");
-  Serial.println(setNT);
+  Serial.println(brightnessLED);
 
   server.send(200, "text/plane", "");
 }
 
 void handlekiemtraDAD() {
   String KTDAD = server.arg("KTDAD");
-  setDAD = KTDAD.toInt();
+  int percent = KTDAD.toInt();
+  speedFAN = map(percent, 0, 100, 0, 255);
 
-  EEPROM.write(1, setDAD);
+  EEPROM.write(1, speedFAN);
   EEPROM.commit();
 
   delay(60);
   Serial.print("Dieu kien kiem tra do am dat: ");
-  Serial.println(setDAD);
+  Serial.println(speedFAN);
 
   server.send(200, "text/plane", "");
 }
 
 void handlekiemtraTime() {
   String takeTIMES = server.arg("TIME");
-  TimeBD = takeTIMES.toInt();
+  int percent = takeTIMES.toInt();
+  speedPUMP = map(percent, 0, 100, 0, 255);
+  EEPROM.write(2, speedPUMP);
+  EEPROM.commit();
 
-  writeIntToEEPROM(TimeBD);
 
   //EEPROM.write(4, TimeBD);
   //EEPROM.commit();
@@ -672,7 +776,7 @@ void handlekiemtraTime() {
 
   delay(60);
   Serial.print("Chon thoi gian lay du lieu la: ");
-  Serial.println(TimeBD);
+  Serial.println(speedPUMP);
 
   server.send(200, "text/plane", "");
 }
@@ -701,20 +805,20 @@ void handlekiemtraImage() {
 }
 
 void handlePUSH_NT() {
-  String sNT = String(setNT);
+  String sNT = String(percent(brightnessLED));
 
   server.send(200, "text/plane", sNT);
 }
 
 void hanlePUSH_DAD() {
-  String sDAD = String(setDAD);
+  String sDAD = String(percent(speedFAN));
 
   server.send(200, "text/plane", sDAD);
 }
 
 void hanlePUSH_Time() {
-  int savedInt = readIntFromEEPROM();
-  String pushTIME = String(savedInt);
+
+  String pushTIME = String(percent(speedPUMP));
 
   server.send(200, "text/plane", pushTIME);
 }
@@ -764,8 +868,8 @@ void function_wifi() {
 
 void Task_readbuttonled(void *pvParameters) {  // Task to read keypad input
 
-  (void)pvParameters;
-  for (;;) {
+
+  while (1) {
     if (Controls == 0) {
 
 
@@ -774,67 +878,70 @@ void Task_readbuttonled(void *pvParameters) {  // Task to read keypad input
         if (digitalRead(buttonled) == 0) {
           if (onOffled == 0) {
             onOffled = 1;
-            digitalWrite(ledPin, 1);
+            ledcWrite(pwmChannel3, brightnessLED);
+
           } else {
             onOffled = 0;
-            digitalWrite(ledPin, 0);
+            ledcWrite(pwmChannel3, 0);
           }
         }
         while (digitalRead(buttonled) == 0)
           ;
       }
     }
-    vTaskDelay(pdMS_TO_TICKS(100));  // Wait for 100 milliseconds
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Wait for 100 milliseconds
   }
 }
 
 void Task_readbuttonfan(void *pvParameters) {  // Task to read keypad input
 
-  (void)pvParameters;
-  for (;;) {
+
+  while (1) {
     if (Controls == 0) {
       if (digitalRead(buttonfan) == 0) {
         vTaskDelay(pdMS_TO_TICKS(20));
         if (digitalRead(buttonfan) == 0) {
           if (onOfffan == 0) {
             onOfffan = 1;
-            digitalWrite(fanPin, 1);
+            ledcWrite(pwmChannel2, speedFAN);
+
           } else {
             onOfffan = 0;
-            digitalWrite(fanPin, 0);
+            ledcWrite(pwmChannel2, 0);
           }
         }
         while (digitalRead(buttonfan) == 0)
           ;
       }
     }
-    vTaskDelay(pdMS_TO_TICKS(100));  // Wait for 100 milliseconds
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Wait for 100 milliseconds
   }
 }
 
 void Task_readbuttonpump(void *pvParameters) {  // Task to read keypad input
 
-  (void)pvParameters;
-  for (;;) {
+
+  while (1) {
     if (Controls == 0) {
-      
+
       if (digitalRead(buttonpump) == 0) {
         vTaskDelay(pdMS_TO_TICKS(20));
         if (digitalRead(buttonpump) == 0) {
           if (onOffpump == 0) {
             onOffpump = 1;
-            digitalWrite(pumpPin, 1);
-      
+            ledcWrite(pwmChannel1, speedPUMP);
+
+
           } else {
             onOffpump = 0;
-            digitalWrite(pumpPin, 0);
+            ledcWrite(pwmChannel1, 0);
           }
         }
         while (digitalRead(buttonpump) == 0)
           ;
       }
     }
-    vTaskDelay(pdMS_TO_TICKS(100));  // Wait for 100 milliseconds
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Wait for 100 milliseconds
   }
 }
 
@@ -859,10 +966,10 @@ String readStringFromEEPROM() {
     buffer[i] = c;
   }
   buffer[i] = '\0';
-  
+
   return String(buffer);
 }
-
+/*
 void writeIntToEEPROM(int data) {
   EEPROM.write(4, (data >> 8) & 0xFF);  // Most significant byte (MSB)
   EEPROM.write(5, data & 0xFF);         // Least significant byte (LSB)
@@ -873,4 +980,8 @@ int readIntFromEEPROM() {
   int msb = EEPROM.read(4);
   int lsb = EEPROM.read(5);
   return (msb << 8) | lsb;
+}*/
+
+int percent(int value) {
+  return (int)((value * 100) / 255);
 }

@@ -1,4 +1,5 @@
-const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
+const char MAIN_page[] PROGMEM = R"=====(
+<!DOCTYPE html>
 
 <html>
 
@@ -160,14 +161,12 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
             .btn {
                 min-width: 120px;
                 max-width: 200px;
-                height: 50px;
+                height: 60px;
                 box-sizing: border-box;
                 outline: none;
                 color: #fff;
                 padding: 4px 4px;
                 border-radius: 50px;
-                cursor: pointer;
-
                 margin: auto;
                 text-align: center;
                 font-size: 25px;
@@ -188,7 +187,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
 }
 */
 
-            .btn_on {
+            /*  .btn_on {
                 background-image: linear-gradient(135deg, #E83507, #86d472);
                 display: block;
 
@@ -199,6 +198,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 background-image: linear-gradient(135deg, #e1e822, #1eb3c7);
                 display: block;
             }
+            */
 
             .btn_on .btn_1,
             .btn_off .btn_1 {
@@ -663,7 +663,28 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 font-size: 20px;
             }
 
+            #toggle_control {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #333;
+                background: rgb(237, 230, 230);
+                border-radius: 50%;
+                cursor: pointer;
+                margin-left: 3px;
+                margin-right: 3px;
+                order: 0;
+            }
 
+            #text_led {
+                margin-right: 3px;
+                margin-left: 3px;
+                order: 1;
+            }
+
+            #ledcontrol {
+                background-image: linear-gradient(135deg, #E83507, #86d472);
+                display: block;
+            }
 
 
 
@@ -689,12 +710,12 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
             }
 
 
-            html {
+            /* html {
                 height: 100%;
-                background-image: url(https://inkythuatso.com/uploads/thumbnails/800/2022/05/iphone-cool-phone-wallpapers-newhairstylesformen2014com-19-11-45-14.jpg);
+                background-image: url(https://images4.alphacoders.com/606/thumb-1920-606667.jpg);
                 background-repeat: no-repeat;
                 background-position: center;
-            }
+            }*/
 
             #task_mobile .tabs {
                 animation: slideInLeft linear 0.4s;
@@ -1076,27 +1097,35 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
 
             .nutnhan {
                 display: flex;
-                justify-content: space-around;
+                flex-direction: column;
+
             }
+
 
             .btn {
                 min-width: 110px;
-                max-width: 180px;
-                height: 50px;
+                max-width: 205px;
+                height: 60px;
                 box-sizing: border-box;
                 outline: none;
                 color: #fff;
                 padding: 4px 4px;
                 border-radius: 50px;
-                cursor: pointer;
-
                 margin: auto;
                 text-align: center;
-                font-size: 20px;
+                font-size: 25px;
                 font-weight: 900;
                 z-index: 2;
                 box-shadow: 3px 3px 3px 3px #212129;
 
+            }
+
+            #led+#fan {
+                margin-top: 15px;
+            }
+
+            #fan+#pump {
+                margin-top: 15px;
             }
 
             /*
@@ -1110,7 +1139,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
 }
 */
 
-            .btn_on {
+            /*  .btn_on {
                 background-image: linear-gradient(135deg, #E83507, #86d472);
                 display: block;
 
@@ -1121,7 +1150,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 background-image: linear-gradient(135deg, #e1e822, #1eb3c7);
                 display: block;
             }
-
+*/
             .btn_on .btn_1,
             .btn_off .btn_1 {
 
@@ -1131,7 +1160,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 transition: background 0.5s ease;
                 width: 100%;
                 display: flex;
-                justify-content: center;
+                justify-content: space-around;
                 align-items: center;
                 margin-bottom: 16px;
             }
@@ -1204,7 +1233,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
             #toast {
 
                 border-radius: 2px;
-                padding: 20px 0;
+                padding: 10px 0;
                 width: 100%;
                 /*border-left: 9px solid #054e11;*/
                 box-shadow: 0 7px 12px rgba(5, 7, 0, 0.4);
@@ -1212,7 +1241,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 /*background-color: #fafafa;*/
                 align-items: center;
                 background-color: rgba(206, 243, 212, 0.5);
-                margin: 100px auto auto auto;
+                margin: 55px auto auto auto;
                 max-height: 700px;
             }
 
@@ -1223,7 +1252,8 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
 
             #intro {
                 text-align: center;
-                margin: 10px 0px 30px;
+                margin: 5px 0px 20px;
+                font-size: 25px;
             }
 
             .btn_click {
@@ -1262,6 +1292,29 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 z-index: -1;
                 cursor: pointer;
             }
+
+
+            #toggle_control {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #333;
+                background: rgb(237, 230, 230);
+                border-radius: 50%;
+                cursor: pointer;
+
+                order: 0;
+            }
+
+            #text_led {
+
+                order: 1;
+            }
+
+            #ledcontrol {
+                background-image: linear-gradient(135deg, #E83507, #86d472);
+                display: block;
+            }
+
 
 
 
@@ -1338,18 +1391,18 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
         <h1 id="intro">SET UP AUTOMATIC CONTROL</h1>
         <div class="slidecontainer">
             <input type="range" min="0" max="100" value="0" class="slid slid_change" id="my0">
-            <p id="quay">TEMPERATURE: <span id="demo0"></span><span id="do"> °C</span></p>
+            <p id="quay">LED BRIGHTNESS: <span id="demo0"></span><span id="do"> °C</span></p>
         </div>
 
         <div class="slidecontainer">
             <input type="range" min="0" max="100" value="0" class="slid slid_change" id="my2">
-            <p id="quay">SOIL MOISTURE: <span id="demo2"></span><span id="do"> %</span></p>
+            <p id="quay">FAN SPEED: <span id="demo2"></span><span id="do"> %</span></p>
         </div>
 
-        <!-- <div class="slidecontainer">
-            <input type="range" min="0" max="1800" value="0" class="slid slid_change" id="my3">
-            <p id="quay">THỜI GIAN LẤY DỮ LIỆU: <span id="demo3"></span><span id="do"> s</span></p>
-        </div>-->
+        <div class="slidecontainer">
+            <input type="range" min="0" max="100" value="0" class="slid slid_change" id="my3">
+            <p id="quay">PUMP SPEED: <span id="demo3"></span><span id="do"> s</span></p>
+        </div>
 
         <div id="container">
             <div id="toggle">
@@ -1360,28 +1413,37 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
 
         <div class="nutnhan" id="button_media_on">
             <div class="led" id="led" title="1">
-                <div class="btn btn_on">
-                    <div class="btn_1">ON LED</div>
+                <div id="ledcontrol" class="btn btn_on">
+                    <div class="btn_1">
+                        <div id="toggle_control" onclick="control_button(0,'LED')"></div>
+                        <div id="text_led">ON LED</div>
+                    </div>
                 </div>
             </div>
 
 
             <div class="fan" id="fan" title="1">
-                <div class="btn btn_on">
-                    <div class="btn_1">ON FAN</div>
+                <div id="ledcontrol" class="btn btn_on">
+                    <div class="btn_1">
+                        <div id="toggle_control" onclick="control_button(1,'FAN')"></div>
+                        <div id="text_led">ON FAN</div>
+                    </div>
                 </div>
             </div>
 
 
             <div class="pump" id="pump" title="1">
-                <div class="btn btn_on">
-                    <div class="btn_1">ON PUMP</div>
+                <div id="ledcontrol" class="btn btn_on">
+                    <div class="btn_1">
+                        <div id="toggle_control" onclick="control_button(2,'PUMP')"></div>
+                        <div id="text_led">ON PUMP</div>
+                    </div>
                 </div>
             </div>
         </div>
 
 
-        <div class="nutnhan" id="button_media_off">
+        <div class="nutnhan" id="button_media_off" style="display: none;">
             <div class="led" id="led1" title="0">
                 <div class="btn btn_off">
                     <div class="btn_1">OFF LED</div>
@@ -1480,20 +1542,14 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-
     <div id="select">
 
         <i id="select_img" style="color: rgb(130, 201, 24); font-size: 40px;" class="fa-regular fa-image"></i>
         <p>Select img</p>
 
     </div>
-
-
-
-
 
     <script>
 
@@ -1518,6 +1574,8 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
         var button_control = document.getElementById('toggle_button');
         var text_control = document.querySelector('.text');
         var idcontrol = document.getElementById("toggle");
+
+        var ledcontrol = document.querySelectorAll("#ledcontrol");
         console.log(buttonXN);
 
         getkiemtraNT();
@@ -1539,9 +1597,6 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
 
 
         }, 1000); //2000mSeconds update rate
-
-
-
 
 
         function getkiemtraTime() {
@@ -1591,39 +1646,39 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
         }
 
         function getControl() {
-             var xhttp = new XMLHttpRequest();
-             xhttp.onreadystatechange = function () {
-             if (this.readyState == 4 && this.status == 200) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
 
 
-            
-
-            if (this.responseText == "1") {
-                button_control.className = 'toggle-on';
-                text_control.className = 'text-on';
-                text_control.textContent = "AUTOMATIC"
-                button_control.setAttribute('onclick', 'Toggle_CHECK()');
-                idcontrol.style.background = 'linear-gradient(135deg, #ff3300, #86d472)';
-                update_control_button("none");
-
-            }
-
-            else {
-
-                button_control.className = 'toggle-off';
-                text_control.className = 'text-off';
-                text_control.textContent = "MANUAL";
-                button_control.setAttribute('onclick', 'Toggle_CHECK()');
-                idcontrol.style.background = 'linear-gradient(135deg, #e1e822, #1eb3c7)';
-                update_control_button("flex");
 
 
-            }
+                    if (this.responseText == "1") {
+                        button_control.className = 'toggle-on';
+                        text_control.className = 'text-on';
+                        text_control.textContent = "AUTOMATIC"
+                        button_control.setAttribute('onclick', 'Toggle_CHECK()');
+                        idcontrol.style.background = 'linear-gradient(135deg, #ff3300, #86d472)';
+                        update_control_button("none");
 
-               }
+                    }
+
+                    else {
+
+                        button_control.className = 'toggle-off';
+                        text_control.className = 'text-off';
+                        text_control.textContent = "MANUAL";
+                        button_control.setAttribute('onclick', 'Toggle_CHECK()');
+                        idcontrol.style.background = 'linear-gradient(135deg, #e1e822, #1eb3c7)';
+                        update_control_button("flex");
+
+
+                    }
+
+                }
             };
-             xhttp.open("GET", "kiemtraCONTROL", true);
-             xhttp.send();
+            xhttp.open("GET", "kiemtraCONTROL", true);
+            xhttp.send();
         }
 
         function getImage() {
@@ -1631,9 +1686,15 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
 
+                    image = this.responseText;
                     html.style.background = `url(${this.responseText})`;
                     change_img.style.display = "none";
-                    change_image();
+                    if (window.outerWidth < 785) {
+                        change_image_mobile();
+                    }
+                    else {
+                        change_image();
+                    }
 
                 }
             };
@@ -1656,6 +1717,11 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
             xhttp.open("GET", "docnhietdo", true);
             xhttp.send();
         }
+
+
+
+
+
 
         function getnhietdoF() {
             var xhttp = new XMLHttpRequest();
@@ -1905,44 +1971,44 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
             xhttp.open("GET", "setPUMP?CPUMP=" + pos, true);
             xhttp.send();
         }
-
-        var button_led = document.getElementById("led");
-
-        button_led.onclick = function () {
-            sendData_LED(button_led.title)
-
-        }
-
-        var button_led1 = document.getElementById("led1");
-
-        button_led1.onclick = function () {
-            sendData_LED(button_led1.title);
-        }
-
-
-        var button_fan = document.getElementById("fan");
-
-        button_fan.onclick = function () {
-            sendData_FAN(button_fan.title);
-        }
-
-        var button_fan1 = document.getElementById("fan1");
-
-        button_fan1.onclick = function () {
-            sendData_FAN(button_fan1.title);
-        }
-        var button_pump = document.getElementById("pump");
-
-        button_pump.onclick = function () {
-            sendData_PUMP(button_pump.title);
-        }
-
-        var button_pump1 = document.getElementById("pump1");
-
-        button_pump1.onclick = function () {
-            sendData_PUMP(typeof button_pump1.title);
-        }
-
+        /*
+                var button_led = document.getElementById("led");
+        
+                button_led.onclick = function () {
+                    sendData_LED(button_led.title)
+        
+                }
+        
+                var button_led1 = document.getElementById("led1");
+        
+                button_led1.onclick = function () {
+                    sendData_LED(button_led1.title);
+                }
+        
+        
+                var button_fan = document.getElementById("fan");
+        
+                button_fan.onclick = function () {
+                    sendData_FAN(button_fan.title);
+                }
+        
+                var button_fan1 = document.getElementById("fan1");
+        
+                button_fan1.onclick = function () {
+                    sendData_FAN(button_fan1.title);
+                }
+                var button_pump = document.getElementById("pump");
+        
+                button_pump.onclick = function () {
+                    sendData_PUMP(button_pump.title);
+                }
+        
+                var button_pump1 = document.getElementById("pump1");
+        
+                button_pump1.onclick = function () {
+                    sendData_PUMP(typeof button_pump1.title);
+                }
+        */
         inputElement.onchange = function (e) {
 
             console.log(e.target.value);
@@ -1990,6 +2056,13 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
         function change_image() {
             html.style.backgroundRepeat = "no-repeat";
             html.style.backgroundSize = "contain";
+            html.style.backgroundPosition = "center";
+        }
+
+        function change_image_mobile() {
+            html.style.height = "100%";
+            html.style.backgroundSize = "auto 100%";
+            html.style.backgroundRepeat = "no-repeat";
             html.style.backgroundPosition = "center";
         }
 
@@ -2120,21 +2193,94 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
         function update_control_button(signal) {
 
             document.getElementById("button_media_on").style.display = signal;
-            document.getElementById("button_media_off").style.display = signal;
+            //document.getElementById("button_media_off").style.display = signal;
 
         }
 
 
 
         var icon_bar = document.getElementById("baricon");
+        console.log("hienj thi len");
         console.log(icon_bar);
+
 
         icon_bar.onclick = function () {
             document.getElementById("task_mobile").style.display = "block";
         };
 
+
+
+
+        var sendcontrol = document.getElementById("toggle_control");
+
+
+
+        function control_button(val, title) {
+            console.log('dang su dung:', val, 'vaf title la:', title);
+
+            if (document.querySelectorAll("#toggle_control")[val].style.order == 0) {
+                mode_button_control_OFF(val, title)
+                console.log("OFF");
+                select_button_control(0, title);
+
+
+            }
+            else {
+                mode_button_control_ON(val, title)
+                console.log("ON");
+                select_button_control(1, title);
+
+            }
+        }
+
+        function select_button_control(number, property) {
+            if (property == "LED") {
+                console.log("TIEN HANH DIEU KHIEN l ", property);
+                console.log("DANG O TRANG THAI: ", number);
+                sendData_LED(number);
+            }
+            else if (property == "FAN") {
+                console.log("TIEN HANH DIEU KHIEN f ", property);
+                console.log("DANG O TRANG THAI: ", number);
+                sendData_FAN(number);
+            }
+            else {
+                console.log("TIEN HANH DIEU KHIEN  p ", property);
+                console.log("DANG O TRANG THAI: ", number);
+                sendData_PUMP(number);
+            }
+        }
+
+        function mode_button_control_OFF(val, title) {
+            document.querySelectorAll("#text_led")[val].style.order = '0';
+            document.querySelectorAll("#toggle_control")[val].style.order = '1';
+            document.querySelectorAll("#text_led")[val].innerHTML = `OFF ${title}`;
+            ledcontrol[val].style.backgroundImage = "linear-gradient(135deg, #e1e822, #1eb3c7)";
+        }
+
+        function mode_button_control_ON(val, title) {
+            document.querySelectorAll("#toggle_control")[val].style.order = '0';
+            document.querySelectorAll("#text_led")[val].style.order = '1';
+            document.querySelectorAll("#text_led")[val].innerHTML = `ON ${title}`;
+            ledcontrol[val].style.backgroundImage = "linear-gradient(135deg, #E83507, #86d472)";
+        }
+
+        function displayWindowSize() {
+            if (window.outerWidth < 785) {
+                console.log("Thay doi man hinh!");
+                html.style.backgroundImage = `url(${image})`;
+                change_image_mobile();
+            }
+        }
+        window.onresize = displayWindowSize;
+
+
+
+
+
     </script>
 </body>
 
 </html>
+
 )=====";

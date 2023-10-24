@@ -10,10 +10,6 @@
 
 //---------------------------------------- tao bien co ham delay vaf gia tri dieu kieen de dieu khien cac thiet bi trong nha kinh//
 
-
-
-
-
 //-------------------------------------------------------------------------------------
 
 #define ServoPort 13
