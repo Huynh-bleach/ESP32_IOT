@@ -124,7 +124,7 @@ void setup() {
   speedPUMP = EEPROM.read(2);
   Controls = EEPROM.read(8);
 
-
+ function_wifi();
 
   xTaskCreate(Task_readKeypadTask, "KeypadTask", 3072, NULL, 4, NULL);
 
@@ -139,7 +139,7 @@ void setup() {
   lcd.init();  // initialize the lcd
   lcd.backlight();
 
-  function_wifi();
+ 
 
 
 
@@ -654,18 +654,10 @@ void docdulieudoamdat() {
 
 // ----------------------------------------------------------------------------------------- ham doc gia tri anh sang
 void docdulieuanhsang() {
-
-  String htanhsang;
-  if (anhsang > 50) {
-    htanhsang = "Dang toi";
-  } else {
-    htanhsang = "Dang sang";
-  }
-
   if (anhsang < -5) {
     server.send(200, "text/plane", "Failed");
   } else {
-    server.send(200, "text/plane", htanhsang);
+    server.send(200, "text/plane", String(anhsang));
   }
 }
 //----------------------------------------------------
