@@ -153,7 +153,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 <div id="ledcontrol" class="btn btn_on">
                     <div class="btn_1">
                         <div id="toggle_control" onclick="control_button(0,'LED')"></div>
-                        <div id="text_led">ON LED</div>
+                        <div id="text_led">OFF LED</div>
                     </div>
                 </div>
             </div>
@@ -163,7 +163,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 <div id="ledcontrol" class="btn btn_on">
                     <div class="btn_1">
                         <div id="toggle_control" onclick="control_button(1,'FAN')"></div>
-                        <div id="text_led">ON FAN</div>
+                        <div id="text_led">OFF FAN</div>
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
                 <div id="ledcontrol" class="btn btn_on">
                     <div class="btn_1">
                         <div id="toggle_control" onclick="control_button(2,'PUMP')"></div>
-                        <div id="text_led">ON PUMP</div>
+                        <div id="text_led">OFF PUMP</div>
                     </div>
                 </div>
             </div>
@@ -966,7 +966,7 @@ const char MAIN_page[] PROGMEM = R"=====(<!DOCTYPE html>
         function control_button(val, title) {
             console.log('dang su dung:', val, 'vaf title la:', title);
 
-            if (document.querySelectorAll("#toggle_control")[val].style.order == 0) {
+            if (document.querySelectorAll("#toggle_control")[val].style.order == "0") {
                 mode_button_control_OFF(val, title)
                 console.log("OFF");
                 select_button_control(0, title);
@@ -1716,17 +1716,17 @@ display: block;
             cursor: pointer;
             margin-left: 3px;
             margin-right: 3px;
-            order: 0;
+            order: 1;
         }
 
         #text_led {
             margin-right: 3px;
             margin-left: 3px;
-            order: 1;
+            order: 0;
         }
 
         #ledcontrol {
-            background-image: linear-gradient(135deg, #E83507, #86d472);
+            background-image: linear-gradient(135deg, #e1e822, #1eb3c7);
             display: block;
         }
 
@@ -2371,16 +2371,16 @@ display: block;
             border-radius: 50%;
             cursor: pointer;
 
-            order: 0;
+            order: 1;
         }
 
         #text_led {
 
-            order: 1;
+            order: 0;
         }
 
         #ledcontrol {
-            background-image: linear-gradient(135deg, #E83507, #86d472);
+            background-image: linear-gradient(135deg, #e1e822, #1eb3c7);
             display: block;
         }
 

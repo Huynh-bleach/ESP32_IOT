@@ -668,9 +668,9 @@ void docdulieuanhsang() {
 void handleLED() {
   String cled = server.arg("CLED");
   // thled = cled;
-  onOffled = cled.toInt();
+  int kt = cled.toInt();
 
-  if (onOffled == 1) {
+  if (kt == 1) {
     ledcWrite(pwmChannel3, brightnessLED);
 
   } else {
@@ -687,8 +687,8 @@ void handleLED() {
 void handleFAN() {
   String cfan = server.arg("CFAN");
   // thfan = cfan;
-  onOfffan = cfan.toInt();
-  if (onOfffan == 1) {
+  int kt = cfan.toInt();
+  if (kt == 1) {
     ledcWrite(pwmChannel2, speedFAN);
 
   } else {
@@ -707,8 +707,8 @@ void handleFAN() {
 void handlePUMP() {
   String cpump = server.arg("CPUMP");
   // thpump = cpump;
-  onOffpump = cpump.toInt();
-  if (onOffpump == 1) {
+  int kt = cpump.toInt();
+  if (kt == 1) {
     ledcWrite(pwmChannel1, speedPUMP);
 
   } else {
@@ -736,11 +736,6 @@ void handlekiemtraNT() {
   Serial.print("Dieu kien kiem tra nhiet do: ");
   Serial.println(brightnessLED);
 
-  if(onOffled == 1){
-    ledcWrite(pwmChannel1, brightnessLED);
-  }
-
-
   server.send(200, "text/plane", "");
 }
 
@@ -755,9 +750,7 @@ void handlekiemtraDAD() {
   delay(60);
   Serial.print("Dieu kien kiem tra do am dat: ");
   Serial.println(speedFAN);
-  if(onOfffan == 1){
-    ledcWrite(pwmChannel2, speedFAN);
-  }
+ 
 
   server.send(200, "text/plane", "");
 }
@@ -779,11 +772,6 @@ void handlekiemtraTime() {
   delay(60);
   Serial.print("Chon thoi gian lay du lieu la: ");
   Serial.println(speedPUMP);
-
-  if(onOffpump == 1){
-    ledcWrite(pwmChannel3, speedPUMP);
-  }
-
   server.send(200, "text/plane", "");
 }
 
